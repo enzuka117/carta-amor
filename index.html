@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Carta de Amor</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+font-family:'Segoe UI';
+background: radial-gradient(circle at 20% 10%, #ff6bb5 0%, #c2185b 45%, #4a0023 100%);
+overflow:hidden;
+}
+
+/* SOBRE CON TEXTURA PAPEL */
+
+.envelope{
+position:relative;
+width:900px;
+height:520px;
+border-radius:25px;
+box-shadow:0 40px 100px rgba(0,0,0,.45);
+overflow:hidden;
+background:
+repeating-linear-gradient(
+45deg,
+#fdfaf7,
+#fdfaf7 4px,
+#f7f1ec 4px,
+#f7f1ec 8px
+);
+}
+
+/* TAPA */
+
+.flap{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:50%;
+background:#f3e8e3;
+clip-path:polygon(0 0,100% 0,50% 100%);
+transform-origin:top;
+transition:transform 1.2s ease;
+z-index:5;
+}
+
+/* CORAZÓN CENTRAL */
+
+#sealHeart{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:130px;
+color:#ff4d6d;
+cursor:pointer;
+z-index:10;
+animation:heartbeat 1.2s infinite;
+text-shadow:
+0 0 10px #ffd700,
+0 0 20px #ffae00,
+0 0 30px #ffae00;
+filter: drop-shadow(0 0 15px #ffd700);
+}
+
+/* LATIDO */
+
+@keyframes heartbeat{
+0%{transform:translate(-50%,-50%) scale(1);}
+25%{transform:translate(-50%,-50%) scale(1.15);}
+40%{transform:translate(-50%,-50%) scale(1);}
+60%{transform:translate(-50%,-50%) scale(1.12);}
+100%{transform:translate(-50%,-50%) scale(1);}
+}
+
+/* CONTENIDO */
+
+.content{
+position:absolute;
+width:100%;
+height:100%;
+padding:60px;
+display:flex;
+align-items:center;
+opacity:0;
+transition:opacity 1s ease;
+}
+
+/* FOTO */
+
+.photo{
+position:absolute;
+right:90px;
+bottom:60px;
+width:340px;
+height:420px;
+border-radius:30px;
+overflow:hidden;
+box-shadow:0 30px 80px rgba(0,0,0,.4);
+opacity:0;
+transform:scale(0.6);
+transition:all 1s cubic-bezier(.2,.8,.2,1);
+}
+
+.photo.show{
+opacity:1;
+transform:scale(1);
+}
+
+.photo img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* TEXTO */
+
+.content-left{
+width:50%;
+z-index:2;
+}
+
+.text{
+font-family:'Dancing Script', cursive;
+color:#4a2c2c;
+font-size:28px;
+line-height:1.6;
+min-height:200px;
+margin-bottom:40px;
+}
+
+.timerBox{
+opacity:0;
+transform:translateY(20px);
+transition:all 1s ease-out;
+}
+
+.timerBox.visible{
+opacity:1;
+transform:translateY(0);
+}
+
+.timerBox span{
+display:block;
+font-size:20px;
+font-weight:700;
+color:#c2185b;
+margin-top:5px;
+}
+
+/* MINI CORAZONES */
+
+.mini-heart{
+position:absolute;
+font-size:20px;
+pointer-events:none;
+animation:explode 1s ease-out forwards;
+}
+
+@keyframes explode{
+to{
+transform:translate(var(--x),var(--y)) scale(0.5);
+opacity:0;
+}
+}
+
+/* POLVO MÁGICO */
+
+.sparkle{
+position:absolute;
+width:6px;
+height:6px;
+background:radial-gradient(circle,#fff,#ffd700);
+border-radius:50%;
+pointer-events:none;
+animation:spark 1s ease-out forwards;
+}
+
+@keyframes spark{
+to{
+transform:translate(var(--sx),var(--sy)) scale(0.2);
+opacity:0;
+}
+}
+
+/* CORAZONES FONDO */
+
+.bg-heart{
+position:absolute;
+pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="envelope">
+
+<div class="flap" id="flap"></div>
+
+<div id="sealHeart">❤</div>
+
+<div class="content" id="content">
+
+<div class="content-left">
+<div class="text"><p id="typing"></p></div>
+
+<div class="timerBox" id="timerBox">
+<p>Mi amor por ti comenzó hace...</p>
+<span id="time"></span>
+</div>
+</div>
+
+<div class="photo" id="photo">
+<img src="foto.jpg" alt="Nuestra foto">
+</div>
+
+</div>
+</div>
+
+<script>
+
+const START_DATE=new Date("2023-01-18");
+
+const COLORS=[
+"#ff2d55","#ff4d6d","#ff85a1",
+"#c2185b","#9c27b0","#7209b7","#4361ee"
+];
+
+const heart=document.getElementById("sealHeart");
+const flap=document.getElementById("flap");
+const content=document.getElementById("content");
+const photo=document.getElementById("photo");
+
+/* EXPLOSIÓN */
+
+function explodeHearts(){
+for(let i=0;i<30;i++){
+let h=document.createElement("div");
+h.className="mini-heart";
+h.innerHTML="❤";
+h.style.color=COLORS[Math.floor(Math.random()*COLORS.length)];
+
+let angle=Math.random()*Math.PI*2;
+let distance=120+Math.random()*120;
+
+h.style.setProperty("--x",Math.cos(angle)*distance+"px");
+h.style.setProperty("--y",Math.sin(angle)*distance+"px");
+
+h.style.left="50%";
+h.style.top="50%";
+h.style.transform="translate(-50%,-50%)";
+
+document.body.appendChild(h);
+setTimeout(()=>h.remove(),1000);
+}
+}
+
+/* POLVO */
+
+function magicalDust(){
+for(let i=0;i<50;i++){
+let s=document.createElement("div");
+s.className="sparkle";
+
+let angle=Math.random()*Math.PI*2;
+let distance=100+Math.random()*150;
+
+s.style.setProperty("--sx",Math.cos(angle)*distance+"px");
+s.style.setProperty("--sy",Math.sin(angle)*distance+"px");
+
+s.style.left="50%";
+s.style.top="50%";
+s.style.transform="translate(-50%,-50%)";
+
+document.body.appendChild(s);
+setTimeout(()=>s.remove(),1000);
+}
+}
+
+/* CORAZONES FONDO */
+
+const bgHearts=[];
+
+function initBgHearts(){
+for(let i=0;i<220;i++){
+let el=document.createElement("div");
+el.className="bg-heart";
+el.innerHTML="❤";
+
+el.style.color=COLORS[Math.floor(Math.random()*COLORS.length)];
+el.style.fontSize=(10+Math.random()*35)+"px";
+el.style.opacity=0.05 + Math.random()*0.15;
+el.style.filter="blur("+(Math.random()*2)+"px)";
+
+document.body.appendChild(el);
+
+bgHearts.push({
+el,
+x:Math.random()*window.innerWidth,
+y:Math.random()*window.innerHeight,
+speed:0.2+Math.random()*0.6
+});
+}
+}
+
+function animateBg(){
+bgHearts.forEach(b=>{
+b.y+=b.speed;
+b.x-=0.1;
+if(b.y>window.innerHeight){
+b.y=-20;
+b.x=Math.random()*window.innerWidth;
+}
+b.el.style.transform=`translate(${b.x}px,${b.y}px)`;
+});
+requestAnimationFrame(animateBg);
+}
+
+/* TIMER */
+
+function updateTimer(){
+let diff=Date.now()-START_DATE.getTime();
+let total=Math.floor(diff/1000);
+
+let d=Math.floor(total/86400);
+let h=Math.floor((total%86400)/3600);
+let m=Math.floor((total%3600)/60);
+let s=total%60;
+
+document.getElementById("time").innerText=
+`${d} días ${h.toString().padStart(2,'0')} horas ${m.toString().padStart(2,'0')} min ${s.toString().padStart(2,'0')} seg`;
+}
+
+/* TYPING */
+
+const msg=`Para el amor de mi vida:
+
+Si pudiera elegir un lugar seguro, sería a tu lado.
+Cuanto más tiempo estoy contigo más te amo.
+
+— I Love You! —`;
+
+let typingIndex=0;
+
+function animateTyping(){
+if(typingIndex<msg.length){
+let target=document.getElementById("typing");
+target.innerHTML+=msg[typingIndex]==="\n"?"<br>":msg[typingIndex];
+typingIndex++;
+setTimeout(animateTyping,30);
+}
+}
+
+/* CLICK */
+
+heart.onclick=()=>{
+
+heart.style.animation="none";
+
+explodeHearts();
+magicalDust();
+
+flap.style.transform="rotateX(180deg)";
+heart.style.opacity=0;
+
+setTimeout(()=>{
+content.style.opacity=1;
+photo.classList.add("show");
+animateTyping();
+document.getElementById("timerBox").classList.add("visible");
+updateTimer();
+setInterval(updateTimer,1000);
+animateBg();
+},800);
+};
+
+initBgHearts();
+
+</script>
+
+</body>
+</html>
