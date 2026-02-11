@@ -10,30 +10,29 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:'Georgia', serif;
+font-family: 'Georgia', serif;
 }
 
 body{
-height:100vh;
+background:linear-gradient(135deg,#ff4e8a,#b30059);
 display:flex;
 justify-content:center;
 align-items:center;
-background:linear-gradient(135deg,#ff4e8a,#b30059);
+height:100vh;
 overflow:hidden;
 }
 
 /* SOBRE */
 .envelope{
 position:relative;
-width:92%;
-max-width:900px;
-height:85vh;
-max-height:650px;
+width:900px;
+max-width:95%;
+height:520px;
 background:#f3efe8;
 border-radius:25px;
 overflow:hidden;
 box-shadow:0 20px 50px rgba(0,0,0,0.3);
-transition:transform 0.8s ease, opacity 0.8s ease;
+margin:auto;
 }
 
 /* TEXTURA PAPEL */
@@ -53,28 +52,28 @@ display:flex;
 justify-content:center;
 align-items:center;
 opacity:0;
-transform:scale(0.9);
+transform:scale(0.95);
 transition:transform 0.8s ease, opacity 0.8s ease;
 }
 
 /* CONTENIDO */
 .content{
 display:flex;
-width:100%;
-height:100%;
 justify-content:space-between;
 align-items:center;
+width:100%;
+height:100%;
 }
 
 .text{
 width:55%;
-font-size:28px;
+font-size:26px;
 line-height:1.6;
 color:#5a3e36;
 }
 
 .counter{
-margin-top:30px;
+margin-top:25px;
 font-size:22px;
 color:#b30059;
 font-weight:bold;
@@ -82,7 +81,7 @@ font-weight:bold;
 
 .photo{
 width:35%;
-aspect-ratio:3/4;
+height:350px;
 border-radius:25px;
 overflow:hidden;
 box-shadow:0 15px 35px rgba(0,0,0,0.25);
@@ -94,7 +93,7 @@ height:100%;
 object-fit:cover;
 }
 
-/* CORAZÓN INICIAL */
+/* CORAZÓN CENTRAL */
 #sealHeart{
 position:absolute;
 top:50%;
@@ -123,21 +122,18 @@ opacity:0;
 pointer-events:none;
 }
 
-/* MINI CORAZONES */
-.heart{
+/* CORAZONES QUE CAEN */
+.falling-heart{
 position:absolute;
-font-size:20px;
-animation:float 4s linear forwards;
-opacity:0.8;
+top:-30px;
+font-size:18px;
+animation:fall linear forwards;
+will-change: transform;
 }
 
-@keyframes float{
-0%{
-transform:translateY(0) scale(1);
-opacity:1;
-}
-100%{
-transform:translateY(-400px) scale(0.5);
+@keyframes fall{
+to{
+transform:translateY(600px);
 opacity:0;
 }
 }
@@ -146,29 +142,28 @@ opacity:0;
 @media (max-width:768px){
 
 .envelope{
-width:94%;
-height:88vh;
-border-radius:20px;
+width:95%;
+height:auto;
+min-height:520px;
 }
 
 .paper{
-padding:25px;
+padding:30px;
 }
 
 .content{
 flex-direction:column;
-justify-content:center;
 }
 
 .text{
 width:100%;
-font-size:20px;
 text-align:center;
-line-height:1.6;
+font-size:22px;
 }
 
 .photo{
-width:85%;
+width:80%;
+height:280px;
 margin-top:25px;
 }
 
@@ -217,9 +212,8 @@ Cuanto más tiempo estoy contigo más te amo.
 const envelope = document.getElementById("envelope");
 const heart = document.getElementById("sealHeart");
 
-heart.addEventListener("click", () => {
+heart.addEventListener("click",()=>{
 envelope.classList.add("open");
-createHearts();
 });
 
 /* CONTADOR */
@@ -242,20 +236,25 @@ ${days} días ${hours} horas ${minutes} min ${seconds} seg`;
 setInterval(updateCounter,1000);
 updateCounter();
 
-/* MINI CORAZONES OPTIMIZADOS */
-function createHearts(){
-for(let i=0;i<20;i++){
+/* CORAZONES QUE CAEN COMO HOJAS (OPTIMIZADO) */
+
+function createFallingHeart(){
 const heart = document.createElement("div");
-heart.classList.add("heart");
-heart.innerHTML = ["❤️","💜","💙","💖"][Math.floor(Math.random()*4)];
-heart.style.left = Math.random()*100 + "%";
-heart.style.bottom = "0px";
-heart.style.fontSize = (15 + Math.random()*15) + "px";
+heart.classList.add("falling-heart");
+heart.innerHTML = ["❤️","💜","💖","💙"][Math.floor(Math.random()*4)];
+heart.style.left = Math.random()*100 + "vw";
+heart.style.animationDuration = (4 + Math.random()*3) + "s";
 document.body.appendChild(heart);
 
-setTimeout(()=>{heart.remove();},4000);
+setTimeout(()=>{
+heart.remove();
+},7000);
 }
-}
+
+/* Generación continua pero ligera */
+setInterval(()=>{
+createFallingHeart();
+},600);
 
 </script>
 
